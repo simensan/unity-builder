@@ -21,6 +21,7 @@ class BuildParameters {
   public customImage!: string;
   public unitySerial!: string;
   public unityLicensingServer!: string;
+  public unityInstallArchitecture!: string;
   public runnerTempPath!: string;
   public targetPlatform!: string;
   public projectPath!: string;
@@ -132,6 +133,7 @@ class BuildParameters {
       customImage: Input.customImage,
       unitySerial,
       unityLicensingServer: Input.unityLicensingServer,
+      unityInstallArchitecture: Input.unityInstallArchitecture,
       runnerTempPath: Input.runnerTempPath,
       targetPlatform: Input.targetPlatform,
       projectPath: Input.projectPath,

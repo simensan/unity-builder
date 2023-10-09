@@ -2,6 +2,7 @@ import { BuildParameters } from '..';
 import { getUnityChangeset } from 'unity-changeset';
 import { exec, getExecOutput } from '@actions/exec';
 import { restoreCache, saveCache } from '@actions/cache';
+import * as semver from 'semver';
 
 import fs from 'node:fs';
 
@@ -72,6 +73,16 @@ class SetupMac {
     return '';
   }
 
+  private static async getCurrentUnityHubVersion(): Promise<string> {
+    const hubVersionCommand = `plutil -p /Applications/Unity\\ Hub.app/Contents/Info.plist | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}'`;
+    const result = await getExecOutput(hubVersionCommand, undefined, { silent: true });
+    if (result.exitCode === 0 && result.stdout !== '') {
+      return result.stdout;
+    }
+
+    return '';
+  }
+
   private static getModuleParametersForTargetPlatform(targetPlatform: string): string[] {
     const moduleArgument = [];
     switch (targetPlatform) {
@@ -121,6 +132,16 @@ class SetupMac {
       ...moduleArguments,
       '--childModules',
     ];
+
+    const unityHubVersion = await SetupMac.getCurrentUnityHubVersion();
+
+    if (semver.gte(unityHubVersion, '3.5.1')) {
+      if (buildParameters.unityInstallArchitecture === "") {
+        throw new Error(`Unity Hub now requires specifying target architecture. Add unityInstallArchitecture parameter with a value of x86_64 or arm64`);
+      } else {
+        execArguments.push(...["--architecture", buildParameters.unityInstallArchitecture]);
+      }
+    }
 
     // Ignoring return code because the log seems to overflow the internal buffer which triggers
     // a false error
