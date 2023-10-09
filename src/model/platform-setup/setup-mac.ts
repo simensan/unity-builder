@@ -74,7 +74,7 @@ class SetupMac {
   }
 
   private static async getCurrentUnityHubVersion(): Promise<string> {
-    const hubVersionCommand = `plutil -p /Applications/Unity\\ Hub.app/Contents/Info.plist | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}'`;
+    const hubVersionCommand = `/bin/bash -c "plutil -p /Applications/Unity\\ Hub.app/Contents/Info.plist" | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}'`;
     const result = await getExecOutput(hubVersionCommand, undefined, { silent: true });
     if (result.exitCode === 0 && result.stdout !== '') {
       return result.stdout;
