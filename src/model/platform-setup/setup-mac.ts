@@ -136,10 +136,12 @@ class SetupMac {
     const unityHubVersion = await SetupMac.getCurrentUnityHubVersion();
 
     if (semver.gte(unityHubVersion, '3.5.1')) {
-      if (buildParameters.unityInstallArchitecture === "") {
-        throw new Error(`Unity Hub now requires specifying target architecture. Add unityInstallArchitecture parameter with a value of x86_64 or arm64`);
+      if (buildParameters.unityInstallArchitecture === '') {
+        throw new Error(
+          `Unity Hub now requires specifying target architecture. Add unityInstallArchitecture parameter with a value of x86_64 or arm64`,
+        );
       } else {
-        execArguments.push(...["--architecture", buildParameters.unityInstallArchitecture]);
+        execArguments.push(...['--architecture', buildParameters.unityInstallArchitecture]);
       }
     }
 
