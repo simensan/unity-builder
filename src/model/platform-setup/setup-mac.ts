@@ -5,6 +5,7 @@ import { restoreCache, saveCache } from '@actions/cache';
 import * as semver from 'semver';
 
 import fs from 'node:fs';
+import * as core from '@actions/core';
 
 class SetupMac {
   static unityHubBasePath = `/Applications/"Unity Hub.app"`;
@@ -75,7 +76,9 @@ class SetupMac {
 
   private static async getCurrentUnityHubVersion(): Promise<string> {
     const hubVersionCommand = `/bin/bash -c "plutil -p /Applications/Unity\\ Hub.app/Contents/Info.plist" | awk '/CFBundleShortVersionString/ {print substr($3, 2, length($3)-2)}'`;
+    core.info(hubVersionCommand);
     const result = await getExecOutput(hubVersionCommand, undefined, { silent: true });
+    core.info(result.stdout);
     if (result.exitCode === 0 && result.stdout !== '') {
       return result.stdout;
     }
@@ -134,7 +137,7 @@ class SetupMac {
     ];
 
     const unityHubVersion = await SetupMac.getCurrentUnityHubVersion();
-
+    core.info(unityHubVersion);
     if (semver.gte(unityHubVersion, '3.5.1')) {
       if (buildParameters.unityInstallArchitecture === '') {
         throw new Error(
